@@ -1087,16 +1087,16 @@ uint256 static GetOrphanRoot(const CBlockHeader* pblock)
 
 int64 static GetBlockValue(int nHeight, int64 nFees)
 {
-    int64 nSubsidy = 50 * COIN;
+    int64 nSubsidy = 100 * COIN;
 
     // Subsidy is cut in half every 840000 blocks, which will occur approximately every 4 years
-    nSubsidy >>= (nHeight / 840000); // Xyzcoin: 840k blocks in ~4 years
+    nSubsidy >>= (nHeight / 420000); // Xyzcoin: 840k blocks in ~4 years
 
     return nSubsidy + nFees;
 }
 
 static const int64 nTargetTimespan = 3.5 * 24 * 60 * 60; // Xyzcoin: 3.5 days
-static const int64 nTargetSpacing = 2.5 * 60; // Xyzcoin: 2.5 minutes
+static const int64 nTargetSpacing = 1.5 * 60; // Xyzcoin: 90 seconds
 static const int64 nInterval = nTargetTimespan / nTargetSpacing;
 
 //
@@ -2779,25 +2779,25 @@ bool InitBlockIndex() {
         //   vMerkleTree: 97ddfbbae6
 
         // Genesis block
-        const char* pszTimestamp = "NY Times 05/Oct/2011 Steve Jobs, Apple’s Visionary, Dies at 56";
+        const char* pszTimestamp = "21/03/2021 - Year 2 of COVID-19";
         CTransaction txNew;
         txNew.vin.resize(1);
         txNew.vout.resize(1);
         txNew.vin[0].scriptSig = CScript() << 486604799 << CBigNum(4) << vector<unsigned char>((const unsigned char*)pszTimestamp, (const unsigned char*)pszTimestamp + strlen(pszTimestamp));
-        txNew.vout[0].nValue = 50 * COIN;
+        txNew.vout[0].nValue = 100 * COIN;
         txNew.vout[0].scriptPubKey = CScript() << ParseHex("04ac73a785a3295679d3bd461a927c82cd32dbb54b7c1edb56d68386f66cd74d65799a2e09fb2c954eb5fae9719dc678191fd6dbfe2d6c788187e18660fd5cf5a4") << OP_CHECKSIG;
         CBlock block;
         block.vtx.push_back(txNew);
         block.hashPrevBlock = 0;
         block.hashMerkleRoot = block.BuildMerkleTree();
         block.nVersion = 1;
-        block.nTime    = 1317972665;
+        block.nTime    = 1616329319;
         block.nBits    = 0x1e0ffff0;
         block.nNonce   = 2084524493;
 
         if (fTestNet)
         {
-            block.nTime    = 1317798646;
+            block.nTime    = 1616329349;
             block.nNonce   = 385270584;
         }
 
@@ -2806,7 +2806,7 @@ bool InitBlockIndex() {
         printf("%s\n", hash.ToString().c_str());
         printf("%s\n", hashGenesisBlock.ToString().c_str());
         printf("%s\n", block.hashMerkleRoot.ToString().c_str());
-        assert(block.hashMerkleRoot == uint256("0x97ddfbbae6be97fd6cdf3e7ca13232a3afff2353e29badfab7f73011edd4ced9"));
+        assert(block.hashMerkleRoot == uint256("0x"));
         block.print();
         assert(hash == hashGenesisBlock);
 
