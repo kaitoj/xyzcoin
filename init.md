@@ -3,7 +3,6 @@
 These steps have been tested in Ubuntu 18.04 Server; They should work in newer releases; however openssl1.0 and libssl1.0 are hard requirements. Newer releases of openssl and libssl will cause compile to fail.
 
 ## Stage 1 - Set up Virtual Machine (optional)
--------
 You can use any virtual machine software you prefer as long as you are able to use SSH to remotely log in to the machine. 
 Execute the following commands on the virtual machine (not your host). Run these commands seperately.
 
@@ -120,3 +119,40 @@ Change coin maturity
 
 Change lifespan
 `627 return dPriority > COIN * 576 / 250;`
+
+Finally you need to commit your changes. At this stage you should be ready to compile your code for the first time. To do this you will need to log into the virtual machine via SSH (if you are using a virtual machine.)
+
+From the command prompt clone your repository
+`git clone https://github.com/kaitoj/xyzcoin.git`
+
+then
+`cd yourcoin/src && make -f makefile.unix`
+
+As long as you have no errors you will now find a file called `yourcoind` in the current folder.
+
+Execute this file
+`./yourcoind`
+
+Expect to get an error at this point.
+
+### Stage 4 
+You are now ready to locate the Merkle root. This can be found on your virtual machine, in `~/.yourcoin/debug.log` and should be the last line in the file. Copy this number and paste it in the following line in main.cpp.
+
+Change hash Merkle root. 
+`2809 assert(block.hashMerkleRoot == uint256("0x97ddfbbae6be97fd6cdf3e7ca13232a3afff2353e29badfab7f73011edd4ced9"));`
+
+Reset the Genesis block. Remove everything between "" leaving just "0x"
+`2749   hashGenesisBlock = uint256("0xf5ae71e26c74beacc88382716aced69cddf3dffff24f384e1808905e0188f68f");`
+`38     uint256 hashGenesisBlock("0x12a765e31ffd4059bada1e25190f6e98c99d9714d334efa41a195a7e7e04bfe2");`
+
+Commit and push your changes to your repository. Then on your virtual machine execute the following commands.
+`cd ~ && rm -R .yourcoin`
+`cd ~/yourcoin && git pull`
+`cd yourcoin/src && make -f makefile.unix`
+
+As long as you have no errors you will now find a file called `yourcoind` in the current folder.
+
+Execute this file
+`./yourcoind`
+
+Expect to get an error at this point.
