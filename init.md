@@ -135,9 +135,11 @@ Execute this file
 
 Expect to get an error at this point.
 
-### Stage 4 
+## Stage 4 
 You are now ready to locate the Merkle root. This can be found on your virtual machine, in `~/.yourcoin/debug.log` and should be the last line in the file. Copy this number and paste it in the following line in main.cpp.
 
+In src/main.cpp
+---------------
 Change hash Merkle root. 
 `2809 assert(block.hashMerkleRoot == uint256("0x97ddfbbae6be97fd6cdf3e7ca13232a3afff2353e29badfab7f73011edd4ced9"));`
 
@@ -153,6 +155,86 @@ Commit and push your changes to your repository. Then on your virtual machine ex
 As long as you have no errors you will now find a file called `yourcoind` in the current folder.
 
 Execute this file
+`./yourcoind -testnet`
+
+Expect to get an error at this point. As weith the Merkle hash, yo will need to locate the genesis block hash. This can be found on your virtual machine, in `~/.yourcoin/testnet3/debug.log`. At or near the end of the debug log file you should find three lines like the following;
+
+```
+2021-03-21 14:05:19 block.nTime = 1616329319
+2021-03-21 14:05:19 block.nNonce = 2087006351
+2021-03-21 14:05:19 block.GetHash = 2b379f242af728d7ad18df7d8b7f6d7ee0a987780fcdab56356c001ec0be6082
+```
+In src/main.cpp
+---------------
+Change the testnet nOnce and genesis block using the nNonce and the GetHash from the debug log file
+`2801 block.nNonce   = 385270584;`
+`2749 hashGenesisBlock = uint256("0x3acbbcc500475f31853c8912fda7fdcef59976bec5ba4ca5ab91da04ceab0048");`
+
+Repeat the previous steps to obtain the main net nOnce and genesis hash.
 `./yourcoind`
 
-Expect to get an error at this point.
+Expect to get an error at this point. As with the Merkle hash, you will need to locate the genesis block hash. This can be found on your virtual machine, in `~/.yourcoin/debug.log`. At or near the end of the debug log file you should find three lines like the following;
+
+```
+2021-03-21 14:05:19 block.nTime = 1616329319
+2021-03-21 14:05:19 block.nNonce = 2087006351
+2021-03-21 14:05:19 block.GetHash = 2b379f242af728d7ad18df7d8b7f6d7ee0a987780fcdab56356c001ec0be6082
+```
+
+In src/main.cpp
+---------------
+Change the testnet nOnce and genesis block using the nNonce and the GetHash from the debug log file
+`2796 block.nNonce   = 385270584;`
+`38 uint256 hashGenesisBlock("0x2b379f242af728d7ad18df7d8b7f6d7ee0a987780fcdab56356c001ec0be6082");`
+
+## Stage 5
+
+In src/checkpoints.cpp
+----------------------
+
+Change checkpoint map. Delete lines 39 - 54; change 1500 to 0 and replace the hash with the main net genesis hash created in Stage 4
+```
+37 boost::assign::map_list_of
+        (  1500, uint256("0x841a2965955dd288cfa707a755d05a54e45f8bd476835ec9af4402a2b59a2967"))
+        (  4032, uint256("0x9ce90e427198fc0ef05e5905ce3503725b80e26afd35a987965fd7e3d9cf0846"))
+        (  8064, uint256("0xeb984353fc5190f210651f150c40b8a4bab9eeeff0b729fcb3987da694430d70"))
+        ( 16128, uint256("0x602edf1859b7f9a6af809f1d9b0e6cb66fdc1d4d9dcd7a4bec03e12a1ccd153d"))
+        ( 23420, uint256("0xd80fdf9ca81afd0bd2b2a90ac3a9fe547da58f2530ec874e978fce0b5101b507"))
+        ( 50000, uint256("0x69dc37eb029b68f075a5012dcc0419c127672adb4f3a32882b2b3e71d07a20a6"))
+        ( 80000, uint256("0x4fcb7c02f676a300503f49c764a89955a8f920b46a8cbecb4867182ecdb2e90a"))
+        (120000, uint256("0xbd9d26924f05f6daa7f0155f32828ec89e8e29cee9e7121b026a7a3552ac6131"))
+        (161500, uint256("0xdbe89880474f4bb4f75c227c77ba1cdc024991123b28b8418dbbf7798471ff43"))
+        (179620, uint256("0x2ad9c65c990ac00426d18e446e0fd7be2ffa69e9a7dcb28358a50b2b78b9f709"))
+        (240000, uint256("0x7140d1c4b4c2157ca217ee7636f24c9c73db39c4590c4e6eab2e3ea1555088aa"))
+        (383640, uint256("0x2b6809f094a9215bafc65eb3f110a35127a34be94b7d0590a096c3f126c6f364"))
+        (409004, uint256("0x487518d663d9f1fa08611d9395ad74d982b667fbdc0e77e9cf39b4f1355908a3"))
+        (456000, uint256("0xbf34f71cc6366cd487930d06be22f897e34ca6a40501ac7d401be32456372004"))
+        (541794, uint256("0x1cbccbe6920e7c258bbce1f26211084efb19764aa3224bec3f4320d77d6a2fd2"))
+        (585010, uint256("0xea9ea06840de20a18a66acb07c9102ee6374ad2cbafc71794e576354fea5df2d"))
+        (638902, uint256("0x15238656e8ec63d28de29a8c75fcf3a5819afc953dcd9cc45cecc53baec74f38"))
+55      ;
+```
+
+Change timestamp to match the block.nTime in src/main.cpp
+`42 1616329319, // * UNIX timestamp of last checkpoint block`
+
+Change transactions to 0
+`43 4896865,    // * total number of transactions between genesis and last checkpoint`
+
+Change transactions after checkoint (optional)
+`45 7000.0     // * estimated number of transactions per day after checkpoint`
+
+Change block height to 0 and replace the hash with the testnet genesis block hash
+`50 (   546, uint256("0xa0fea99a6897f531600c8ae53367b126824fd6a847b2b2b73817a95b8e27e602"))`
+
+Change line 53 to the testnet block.nTime and line 54 to 0
+```
+52 static const CCheckpointData dataTestnet = {
+        &mapCheckpointsTestnet,
+        1365458829,
+        547,
+        576
+57    };
+```
+
+This is a good time to commit and push all the changes you have made so far.
