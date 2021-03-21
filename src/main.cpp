@@ -2802,7 +2802,7 @@ bool InitBlockIndex() {
         }
 
         // Set true to get genesis block
-        if (false && block.GetHash() != hashGenesisBlock)
+        if (true && block.GetHash() != hashGenesisBlock)
         {
             printf("Searching for genesis block...\n");
             // This will figure out a valid hash and Nonce if you're
