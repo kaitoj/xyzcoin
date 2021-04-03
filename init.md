@@ -1,6 +1,6 @@
 # Instructions
-============
-These steps have been tested in Ubuntu 18.04 Server; They should work in newer releases; however openssl1.0 and libssl1.0 are hard requirements. Newer releases of openssl and libssl will cause compile to fail.
+
+These steps have been tested in Ubuntu 18.04 Server; These steps should work in newer releases; however openssl1.0 and libssl1.0 are hard requirements. Newer releases of openssl and libssl will cause compile to fail.
 
 ## Stage 1 - Set up Virtual Machine (optional)
 You can use any virtual machine software you prefer as long as you are able to use SSH to remotely log in to the machine. 
@@ -57,7 +57,9 @@ It is recommended that you use a good IDE. For example VSCode. This will make ed
 
 On your host machine clone or fork (in github) the following repository. 
 
-`git clone -b 0.8 https://github.com/litecoin-project/litecoin.git`
+```
+git clone -b 0.8 https://github.com/litecoin-project/litecoin.git
+```
 
 If you cloned the repository; go to your github account and create a new repository; then clone the new repository to your host. Copy the contents of the litecoin folder (excluding the .git files are folders) into your new local repository. All modifications will be done in the new repository. This is a good time to make your first commit.
 
@@ -87,11 +89,17 @@ You will need to replace all instances of Litecoin with your coin name. This can
 In src/main.cpp
 ---------------
 Change block reward 
-`1090 int64 nSubsidy = 50 * COIN;`
-`2787 txNew.vout[0].nValue = 50 * COIN;`
+```
+1090 int64 nSubsidy = 50 * COIN;
+```
+```
+2787 txNew.vout[0].nValue = 50 * COIN;
+```
 
 Change reward halving
-`1093 nSubsidy >>= (nHeight / 840000); // Xyzcoin: 840k blocks in ~4 years`
+```
+1093 nSubsidy >>= (nHeight / 840000); // Xyzcoin: 840k blocks in ~4 years
+```
 
 Change
 ``` 
@@ -100,33 +108,51 @@ Change
 ```
 
 Change hash Merkle root. At this stage remove everything between "" leaving only "0x"
-`2809 assert(block.hashMerkleRoot == uint256("0x97ddfbbae6be97fd6cdf3e7ca13232a3afff2353e29badfab7f73011edd4ced9"));`
+```
+2809 assert(block.hashMerkleRoot == uint256("0x97ddfbbae6be97fd6cdf3e7ca13232a3afff2353e29badfab7f73011edd4ced9"));
+```
 
 Change nTime epoch
-`2794 block.nTime    = 1317972665;`
-`2800 block.nTime    = 1317798646;`
+```
+2794 block.nTime    = 1317972665;
+```
+```
+2800 block.nTime    = 1317798646;
+```
 
 Change 
-`2782 const char* pszTimestamp = "NY Times 05/Oct/2011 Steve Jobs, Apple’s Visionary, Dies at 56";`
+```
+2782 const char* pszTimestamp = "NY Times 05/Oct/2011 Steve Jobs, Apple’s Visionary, Dies at 56";
+```
 
 In src/main.h
 ---------------
 Change coin supply
-`55 static const int64 MAX_MONEY = 84000000 * COIN;`
+```
+55 static const int64 MAX_MONEY = 84000000 * COIN;
+```
 
 Change coin maturity
-`58 static const int COINBASE_MATURITY = 100;`
+```
+58 static const int COINBASE_MATURITY = 100;
+```
 
 Change lifespan
-`627 return dPriority > COIN * 576 / 250;`
+```
+627 return dPriority > COIN * 576 / 250;
+```
 
 Finally you need to commit your changes. At this stage you should be ready to compile your code for the first time. To do this you will need to log into the virtual machine via SSH (if you are using a virtual machine.)
 
 From the command prompt clone your repository
-`git clone https://github.com/kaitoj/xyzcoin.git`
+```
+git clone https://github.com/kaitoj/yourcoin.git
+```
 
 then
-`cd yourcoin/src && make -f makefile.unix`
+```
+cd yourcoin/src && make -f makefile.unix
+```
 
 As long as you have no errors you will now find a file called `yourcoind` in the current folder.
 
@@ -141,21 +167,31 @@ You are now ready to locate the Merkle root. This can be found on your virtual m
 In src/main.cpp
 ---------------
 Change hash Merkle root. 
-`2809 assert(block.hashMerkleRoot == uint256("0x97ddfbbae6be97fd6cdf3e7ca13232a3afff2353e29badfab7f73011edd4ced9"));`
+```
+2809 assert(block.hashMerkleRoot == uint256("0x97ddfbbae6be97fd6cdf3e7ca13232a3afff2353e29badfab7f73011edd4ced9"));
+```
 
 Reset the Genesis block. Remove everything between "" leaving just "0x"
-`2749   hashGenesisBlock = uint256("0xf5ae71e26c74beacc88382716aced69cddf3dffff24f384e1808905e0188f68f");`
-`38     uint256 hashGenesisBlock("0x12a765e31ffd4059bada1e25190f6e98c99d9714d334efa41a195a7e7e04bfe2");`
+```
+2749   hashGenesisBlock = uint256("0xf5ae71e26c74beacc88382716aced69cddf3dffff24f384e1808905e0188f68f");
+```
+```
+38     uint256 hashGenesisBlock("0x12a765e31ffd4059bada1e25190f6e98c99d9714d334efa41a195a7e7e04bfe2");
+```
 
 Commit and push your changes to your repository. Then on your virtual machine execute the following commands.
-`cd ~ && rm -R .yourcoin`
-`cd ~/yourcoin && git pull`
-`cd yourcoin/src && make -f makefile.unix`
+```
+cd ~ && rm -R .yourcoin
+cd ~/yourcoin && git pull
+cd yourcoin/src && make -f makefile.unix
+```
 
 As long as you have no errors you will now find a file called `yourcoind` in the current folder.
 
 Execute this file
-`./yourcoind -testnet`
+```
+./yourcoind -testnet
+```
 
 Expect to get an error at this point. As weith the Merkle hash, yo will need to locate the genesis block hash. This can be found on your virtual machine, in `~/.yourcoin/testnet3/debug.log`. At or near the end of the debug log file you should find three lines like the following;
 
@@ -167,11 +203,17 @@ Expect to get an error at this point. As weith the Merkle hash, yo will need to 
 In src/main.cpp
 ---------------
 Change the testnet nOnce and genesis block using the nNonce and the GetHash from the debug log file
-`2801 block.nNonce   = 385270584;`
-`2749 hashGenesisBlock = uint256("0x3acbbcc500475f31853c8912fda7fdcef59976bec5ba4ca5ab91da04ceab0048");`
+```
+2801 block.nNonce   = 385270584;
+```
+```
+2749 hashGenesisBlock = uint256("0x3acbbcc500475f31853c8912fda7fdcef59976bec5ba4ca5ab91da04ceab0048");
+```
 
 Repeat the previous steps to obtain the main net nOnce and genesis hash.
-`./yourcoind`
+```
+./yourcoind
+```
 
 Expect to get an error at this point. As with the Merkle hash, you will need to locate the genesis block hash. This can be found on your virtual machine, in `~/.yourcoin/debug.log`. At or near the end of the debug log file you should find three lines like the following;
 
@@ -184,10 +226,12 @@ Expect to get an error at this point. As with the Merkle hash, you will need to 
 In src/main.cpp
 ---------------
 Change the testnet nOnce and genesis block using the nNonce and the GetHash from the debug log file
-`2796 block.nNonce   = 385270584;`
-`38 uint256 hashGenesisBlock("0x2b379f242af728d7ad18df7d8b7f6d7ee0a987780fcdab56356c001ec0be6082");`
-
-## Stage 5
+```
+2796 block.nNonce   = 385270584;
+```
+```
+38 uint256 hashGenesisBlock("0x2b379f242af728d7ad18df7d8b7f6d7ee0a987780fcdab56356c001ec0be6082");
+```
 
 In src/checkpoints.cpp
 ----------------------
@@ -216,18 +260,26 @@ Change checkpoint map. Delete lines 39 - 54; change 1500 to 0 and replace the ha
 ```
 
 Change timestamp to match the block.nTime in src/main.cpp
-`42 1616329319, // * UNIX timestamp of last checkpoint block`
+```
+42 1616329319, // * UNIX timestamp of last checkpoint block
+```
 
 Change transactions to 0
-`43 4896865,    // * total number of transactions between genesis and last checkpoint`
+```
+43 4896865,    // * total number of transactions between genesis and last checkpoint
+```
 
 Change transactions after checkoint (optional)
-`45 7000.0     // * estimated number of transactions per day after checkpoint`
+```
+45 7000.0     // * estimated number of transactions per day after checkpoint
+```
 
 Change block height to 0 and replace the hash with the testnet genesis block hash
-`50 (   546, uint256("0xa0fea99a6897f531600c8ae53367b126824fd6a847b2b2b73817a95b8e27e602"))`
+```
+50 (   546, uint256("0xa0fea99a6897f531600c8ae53367b126824fd6a847b2b2b73817a95b8e27e602"))
+```
 
-Change line 53 to the testnet block.nTime and line 54 to 0
+Change line 54 to the testnet block.nTime and line 55 to 0
 ```
 52 static const CCheckpointData dataTestnet = {
         &mapCheckpointsTestnet,
@@ -238,3 +290,16 @@ Change line 53 to the testnet block.nTime and line 54 to 0
 ```
 
 This is a good time to commit and push all the changes you have made so far.
+
+Update your repository on your virtual machine as you did at the start of Stage 4. You should now be able to compile and run `./yourcoin` without any errors.
+
+To get the GUI you will also need to compile the GUI
+
+```
+cd ~yourcoin
+qmake && make
+```
+
+If you have a GUI installed; you should now be able to launch the GUI wallet `./yourcoin-qt`
+
+## Stage 5
